@@ -1,14 +1,14 @@
 import express from 'express';
 import morgan from 'morgan';
-import { GetCountriesController } from './controllers/index';
+import { GetCountriesController, RootController } from './controllers/index';
 
 const main = async () => {
   const app = express();
 
   app.use(morgan('dev'));
 
-  app.get('/', GetCountriesController);
-  // app.get('/', RootController);
+  app.get('/', RootController);
+  app.get('/countries', GetCountriesController);
 
   const PORT = process.env.PORT || 5000;
 
