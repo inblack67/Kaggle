@@ -1,0 +1,24 @@
+{
+  "name": "kaggle",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "author": "ryuzaki <ryuzaki>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "nodemon dist/index.js",
+    "build": "tsc",
+    "build:watch": "tsc -w"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.3",
+    "@types/node": "^16.7.10",
+    "nodemon": "^2.0.12",
+    "typescript": "^4.4.2"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "morgan": "^1.10.0"
+  }
+}
