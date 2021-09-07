@@ -12,7 +12,8 @@
   - parameters queries - one or parameters (e.g, CO2 or CO2 and NO2)
   - should return all values for the selected parameters between startYear and endYear
 - Add appropriate checks for queries and erroneous values
-Bonus Features:
+
+- Bonus Features:
 - Add caching
 - Submit the live and Github link for the task along with some screenshots.
 

@@ -1,6 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
-import { GetCountriesController, RootController } from './controllers/index';
+import { RootController } from './controllers/index';
+import countriesRoutes from './routes/countries';
 
 const main = async () => {
   const app = express();
@@ -8,7 +9,7 @@ const main = async () => {
   app.use(morgan('dev'));
 
   app.get('/', RootController);
-  app.get('/countries', GetCountriesController);
+  app.use('/countries', countriesRoutes);
 
   const PORT = process.env.PORT || 5000;
 
