@@ -12,12 +12,10 @@ const main = async () => {
 
   const app = express();
 
-  app.use(populateLocals({ redis, prisma }));
-
   app.use(morgan('dev'));
 
-  app.get('/', RootController);
-  app.use('/countries', countriesRoutes);
+  app.get('/', populateLocals({ redis, prisma }), RootController);
+  app.use('/countries', populateLocals({ redis, prisma }), countriesRoutes);
 
   const PORT = process.env.PORT || 5000;
 

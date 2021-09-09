@@ -1,4 +1,3 @@
-import { Country } from '.prisma/client';
 import { Request, Response, NextFunction } from 'express';
 import { ILocals } from '../interfaces';
 
@@ -58,18 +57,8 @@ export const GetCountryController = async (
   const { country_or_area } = req.params;
   const { startYear, endYear, category } = req.query;
 
-  let countries: Country[];
-
-  if (category) {
-    countries = await res.locals.prisma.country.findMany({
-      where: {
-        category: { contains: category as string },
-        country_or_area,
-      },
-    });
-  }
-
   if (startYear || endYear) {
+    const dynamicFields = category ? { category: String(category) } : {};
     if (startYear && endYear) {
       const filteredCountries = await res.locals.prisma.country.findMany({
         where: {
@@ -78,6 +67,7 @@ export const GetCountryController = async (
             gte: +startYear,
             lte: +endYear,
           },
+          ...dynamicFields,
         },
       });
       res.status(200).json({ success: true, data: filteredCountries });
@@ -88,6 +78,7 @@ export const GetCountryController = async (
           year: {
             gte: +startYear,
           },
+          ...dynamicFields,
         },
       });
       res.status(200).json({ success: true, data: filteredCountries });
@@ -98,6 +89,7 @@ export const GetCountryController = async (
           year: {
             lte: +endYear,
           },
+          ...dynamicFields,
         },
       });
       res.status(200).json({ success: true, data: filteredCountries });
@@ -105,7 +97,7 @@ export const GetCountryController = async (
     return;
   }
 
-  countries = await res.locals.prisma.country.findMany({
+  const countries = await res.locals.prisma.country.findMany({
     where: {
       country_or_area,
     },
