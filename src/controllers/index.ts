@@ -10,59 +10,14 @@ export const GetCountriesController = async (
   res: Response<any, ILocals>,
   __: NextFunction,
 ) => {
-  const { startYear, endYear } = req.query;
-
-  if (startYear || endYear) {
-    if (startYear && endYear) {
-      const filteredCountries = await res.locals.prisma.country.findMany({
-        where: {
-          year: {
-            gte: +startYear,
-            lte: +endYear,
-          },
-        },
-      });
-      res.status(200).json({ success: true, data: filteredCountries });
-    } else if (startYear) {
-      const filteredCountries = await res.locals.prisma.country.findMany({
-        where: {
-          year: {
-            gte: +startYear,
-          },
-        },
-      });
-      res.status(200).json({ success: true, data: filteredCountries });
-    } else if (endYear) {
-      const filteredCountries = await res.locals.prisma.country.findMany({
-        where: {
-          year: {
-            lte: +endYear,
-          },
-        },
-      });
-      res.status(200).json({ success: true, data: filteredCountries });
-    }
-    return;
-  }
-
-  const countries = await res.locals.prisma.country.findMany();
-  res.status(200).json({ success: true, data: countries! });
-};
-
-export const GetCountryController = async (
-  req: Request,
-  res: Response<any, ILocals>,
-  __: NextFunction,
-) => {
-  const { country_or_area } = req.params;
   const { startYear, endYear, category } = req.query;
 
+  const dynamicFields = category ? { category: String(category) } : {};
+
   if (startYear || endYear) {
-    const dynamicFields = category ? { category: String(category) } : {};
     if (startYear && endYear) {
       const filteredCountries = await res.locals.prisma.country.findMany({
         where: {
-          country_or_area,
           year: {
             gte: +startYear,
             lte: +endYear,
@@ -74,7 +29,6 @@ export const GetCountryController = async (
     } else if (startYear) {
       const filteredCountries = await res.locals.prisma.country.findMany({
         where: {
-          country_or_area,
           year: {
             gte: +startYear,
           },
@@ -85,7 +39,6 @@ export const GetCountryController = async (
     } else if (endYear) {
       const filteredCountries = await res.locals.prisma.country.findMany({
         where: {
-          country_or_area,
           year: {
             lte: +endYear,
           },
@@ -98,10 +51,27 @@ export const GetCountryController = async (
   }
 
   const countries = await res.locals.prisma.country.findMany({
-    where: {
-      country_or_area,
-    },
+    where: { ...dynamicFields },
   });
 
   res.status(200).json({ success: true, data: countries });
+};
+
+export const GetCountryController = async (
+  req: Request,
+  res: Response<any, ILocals>,
+  __: NextFunction,
+) => {
+  const { id } = req.params;
+
+  const country = await res.locals.prisma.country.findUnique({
+    where: { id: +id },
+  });
+
+  if (!country) {
+    res.status(404).json({ success: false, error: 'No such country exists' });
+    return;
+  }
+
+  res.status(200).json({ success: true, data: country });
 };
