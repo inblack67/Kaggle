@@ -1,61 +1,80 @@
+import { Country } from '.prisma/client';
 import { Request, Response, NextFunction } from 'express';
-import data from '../../data.json';
-import { IData } from '../interfaces';
+import { ILocals } from '../interfaces';
 
 export const RootController = (_: Request, res: Response, __: NextFunction) => {
   res.send('API up and running');
 };
 
-export const GetCountriesController = (
+export const GetCountriesController = async (
   req: Request,
-  res: Response,
+  res: Response<any, ILocals>,
   __: NextFunction,
 ) => {
-  let countries: IData[] = data;
+  let countries: Country[];
   const { startYear, endYear, category } = req.query;
 
   if (category) {
-    countries = countries.filter((el) =>
-      el.category.includes(category as string),
-    );
+    countries = await res.locals.prisma.country.findMany({
+      where: {
+        category: { equals: category as string },
+      },
+    });
   }
 
   if (startYear || endYear) {
     if (startYear && endYear) {
-      const filteredCountries = countries.filter(
-        (el) => el.year >= +startYear && el.year <= +endYear,
-      );
+      const filteredCountries = await res.locals.prisma.country.findMany({
+        where: {
+          year: {
+            gte: +startYear,
+            lte: +endYear,
+          },
+        },
+      });
       res.status(200).json({ success: true, data: filteredCountries });
     } else if (startYear) {
-      const filteredCountries = countries.filter((el) => el.year >= +startYear);
+      const filteredCountries = await res.locals.prisma.country.findMany({
+        where: {
+          year: {
+            gte: +startYear,
+          },
+        },
+      });
       res.status(200).json({ success: true, data: filteredCountries });
     } else if (endYear) {
-      const filteredCountries = countries.filter((el) => el.year <= +endYear);
+      const filteredCountries = await res.locals.prisma.country.findMany({
+        where: {
+          year: {
+            lte: +endYear,
+          },
+        },
+      });
       res.status(200).json({ success: true, data: filteredCountries });
     }
     return;
   }
 
-  res.status(200).json({ success: true, data: countries });
+  res.status(200).json({ success: true, data: countries! });
 };
 
-export const GetCountryController = (
+export const GetCountryController = async (
   req: Request,
-  res: Response,
+  res: Response<any, ILocals>,
   __: NextFunction,
 ) => {
-  const countries: IData[] = data;
+  const { country_or_area } = req.params;
 
-  const { id } = req.params;
+  const countries = await res.locals.prisma.country.findMany({
+    where: {
+      country_or_area,
+    },
+  });
 
-  const country = countries.find(
-    (el) => el.country_or_area.toLowerCase() === String(id).toLowerCase(),
-  );
-
-  if (!country) {
+  if (countries.length === 0) {
     res.status(404).json({ success: false, error: 'No such country exist' });
     return;
   }
 
-  res.status(200).json({ success: true, data: country });
+  res.status(200).json({ success: true, data: countries });
 };
