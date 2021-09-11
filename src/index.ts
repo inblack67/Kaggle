@@ -3,17 +3,17 @@ import morgan from 'morgan';
 import swaggerUI from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
 import { getMyRedisClient } from './cache';
-import { RootController } from './controllers/index';
 import { getMyPrismaClient } from './db';
 import { populateLocals } from './middlewares/populateLocals';
 import countriesRoutes from './routes/countries';
+import { RootController } from './controllers/index';
 
 const main = async () => {
   const specs = swaggerJSDoc({
     definition: {
       info: {
         title: 'Countries API',
-        version: '3.0.0',
+        version: '1.0.0',
         description: 'REST API for international greenhouse gas emissions',
       },
       servers: [
@@ -22,7 +22,7 @@ const main = async () => {
         },
       ],
     },
-    apis: ['./routes/*.js'],
+    apis: ['**/*.ts'],
   });
 
   const redis = getMyRedisClient();
@@ -32,10 +32,10 @@ const main = async () => {
 
   app.use(morgan('dev'));
 
+  app.use('/docs', swaggerUI.serve, swaggerUI.setup(specs));
+
   app.get('/ping', RootController);
 
-  app.use('/docs', swaggerUI.serve, swaggerUI.setup(specs));
-  
   app.use('/countries', populateLocals({ redis, prisma }), countriesRoutes);
 
   const PORT = process.env.PORT || 5000;
