@@ -10,3 +10,16 @@
 - PostgreSQL
   - Prisma
 - Redis
+
+## Run
+
+- PostgreSQL & Redis should be running on default ports
+  
+```sh
+mv .env.example .env
+yarn
+yarn migrate
+yarn generate
+yarn build
+yarn start
+```

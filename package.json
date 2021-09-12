@@ -10,7 +10,8 @@
     "build": "tsc",
     "build:watch": "tsc -w",
     "populatedb": "node dist/src/scripts/populateDB",
-    "migrate": "yarn prisma migrate dev --name country"
+    "migrate": "yarn prisma migrate dev --name country",
+    "generate": "yarn prisma generate"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
