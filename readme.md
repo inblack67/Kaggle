@@ -10,7 +10,3 @@
 - PostgreSQL
   - Prisma
 - Redis
-- Docker
-- Digital Ocean
-- NGINX
-
